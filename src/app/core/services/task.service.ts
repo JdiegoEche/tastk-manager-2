@@ -31,13 +31,17 @@ export class TaskService {
     })
   );
 
-  constructor(private readonly http: HttpClient) {}
+  constructor(private readonly http: HttpClient) { }
 
   loadTasks(): void {
     this.loadingSubject.next(true);
     this.http.get<Task[]>(this.apiUrl)
       .pipe(
         map(tasks => tasks.slice(0, 20)),
+        map(tasks => tasks.map(task => ({
+          ...task,
+          completed: false
+        }))),
         catchError(error => {
           console.error('Error loading tasks:', error);
           return of([]);
